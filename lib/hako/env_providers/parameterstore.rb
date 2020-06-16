@@ -47,7 +47,12 @@ module Hako
       # @return [Hash<String, Integer>]
       def read_parameters_from_parameterstore
         resp = @client.describe_parameters({})
-        resp.parameters
+        parameters = resp.parameters
+        while resp.next_token do
+            resp = @client.describe_parameters({next_token: resp.next_token})
+            parameters += resp.parameters
+        end
+        parameters
       end
 
       # @param [String] key
